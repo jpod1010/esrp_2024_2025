@@ -1,3 +1,9 @@
 for i in *_ag_PlasticDB; do genomes=$(cat "${i//_ag_PlasticDB}_PERGENOME");names=$(echo "${i//_ag_PlasticDB}");   awk '{print $1,$2,$3}' ERR599028_ag_PlasticDB | awk '!a[$1]++' | awk '$3>50' | awk '{print $2}' | awk -F '|' '{print $3,$5}' | sort | uniq -c | awk -v var=$genomes '{print $2"|"$3,$1/var}' | sed "1 i\Gene|Species $names" > "${i//_ag_PlasticDB}_PlasticDB_Summarized_W_Species"  ; done
 
 for i in *_ag_PlasticDB; do genomes=$(cat "${i//_ag_PlasticDB}_PERGENOME");names=$(echo "${i//_ag_PlasticDB}");   awk '{print $1,$2,$3}' ERR599028_ag_PlasticDB | awk '!a[$1]++' | awk '$3>50' | awk '{print $2}' | awk -F '|' '{print $3}' | sort | uniq -c | awk -v var=$genomes '{print $2,$1/var}' | sed "1 i\Gene $names" > "${i//_ag_PlasticDB}_PlasticDB_Summarized"  ; done
+
+function multijoin() {     out=$1;     shift 1;     cat $1 | awk '{print $1}' > $out;     for f in $*; do join -j 1 --header -a1 -a2 -e0 -oauto $out $f > tmp; mv tmp $out; done; }
+
+multijoin Tara_Oceans_PlasticDB_W_Species *PlasticDB_Summarized_W_Species
+
+multijoin Tara_Oceans_PlasticDB *PlasticDB_Summarized
